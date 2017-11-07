@@ -81,10 +81,53 @@ namespace DBUpDemo.Tests
         [Test]
         public void CheckSPNames()
         {
-            int i = 1;
-            Dictionary<string, int> altered = GetFirstOccurances("ALTER PROCEDURE ".ToLower());
-            Dictionary<string, int> created = GetFirstOccurances("CREATE PROCEDURE ".ToLower());
-            foreach(var sp in altered)
+            CheckObjectNames("PROCEDURE", "_sp");
+        }
+
+        [Test]
+        public void CheckViewNames()
+        {
+            CheckObjectNames("VIEW", "_vw");
+        }
+
+        [Test]
+        public void CheckFunctionNames()
+        {
+            CheckObjectNames("FUNCTION", "_fn");
+        }
+
+        private void CheckObjectNames(string objectType, string suffix)
+        {
+            Dictionary<string, int> created = GetFirstOccurances($"CREATE {objectType} ".ToLower());
+            foreach (var sp in created)
+            {
+                Assert.That(sp.Key.Substring(sp.Key.Length - suffix.Length, suffix.Length), Is.EqualTo(suffix));
+            }
+        }
+
+        [Test]
+        public void CheckSPCreateOrder()
+        {
+            CheckObjectOrders("PROCEDURE");
+        }
+
+        [Test]
+        public void CheckViewCreateOrder()
+        {
+            CheckObjectOrders("VIEW");
+        }
+
+        [Test]
+        public void CheckFunctionCreateOrder()
+        {
+            CheckObjectOrders("FUNCTION");
+        }
+
+        private void CheckObjectOrders(string objectType)
+        {
+            Dictionary<string, int> altered = GetFirstOccurances($"ALTER {objectType} ".ToLower());
+            Dictionary <string, int> created = GetFirstOccurances($"CREATE {objectType} ".ToLower());
+            foreach (var sp in altered)
             {
                 if (!created.ContainsKey(sp.Key))
                 {
@@ -92,7 +135,7 @@ namespace DBUpDemo.Tests
                 }
                 else
                 {
-                    if(sp.Value < created[sp.Key])
+                    if (sp.Value < created[sp.Key])
                     {
                         Assert.Fail($"{sp.Key} is altered before it is created");
                     }

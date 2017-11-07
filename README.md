@@ -1,6 +1,8 @@
 # DBUpDemo
 This is an example of how to use DBUp for SQL database development across local instance databases in a team project. Docker containers have been used to host local SQL Server instances however any implementation of SQL Server could be used.
 
+Unit tests have been created to check for SQL syntax errors and code quality. These should be run before the main project.
+
 ## Docker Setup
 Pull the docker image for SQL Server (Linux and Windows distributions are available)
 ```PowerShell
